@@ -1,0 +1,20 @@
+{{- if .Values.serviceMonitor.enabled }}
+{{- range $name, $svc := .Values.services }}
+{{- $ctx := dict "root" $ "name" $name "svc" $svc }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "order-service.fullname" $ctx }}
+  labels:
+    {{- include "order-service.labels" $ctx | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "order-service.selectorLabels" $ctx | nindent 6 }}
+  endpoints:
+    - port: {{ $svc.adminPortName }}
+      path: /metrics
+      interval: 15s
+---
+{{- end }}
+{{- end }}

@@ -1,0 +1,93 @@
+{
+  "title": "order-service — RED metrics",
+  "uid": "order-service-red",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "time": { "from": "now-30m", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "HTTP request rate by route",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_total[1m])) by (route, method)",
+          "legendFormat": "{{method}} {{route}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "HTTP error rate (5xx / total)",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_total{status=~\"5..\"}[1m])) / sum(rate(http_requests_total[1m]))",
+          "legendFormat": "error ratio"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "HTTP p95 latency by route",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, route))",
+          "legendFormat": "{{route}}"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "gRPC request rate by method/code",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "sum(rate(grpc_server_requests_total[1m])) by (method, code)",
+          "legendFormat": "{{method}} {{code}}"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Go goroutines",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "targets": [
+        { "expr": "go_goroutines{job=\"order-service\"}", "legendFormat": "goroutines" }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Process RSS memory",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "targets": [
+        { "expr": "process_resident_memory_bytes{job=\"order-service\"}", "legendFormat": "RSS" }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Recent logs",
+      "type": "logs",
+      "datasource": "Loki",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 24 },
+      "targets": [
+        { "expr": "{compose_service=\"app\"}" }
+      ]
+    }
+  ]
+}

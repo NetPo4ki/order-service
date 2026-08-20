@@ -1,0 +1,18 @@
+order-service ({{ .Chart.AppVersion }}) deployed as release "{{ .Release.Name }}" in namespace "{{ .Release.Namespace }}".
+
+Check pods:
+  kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }}
+
+Port-forward the API:
+  kubectl port-forward -n {{ .Release.Namespace }} svc/{{ .Release.Name }}-order-service 8080:8080 9090:9090
+  curl http://localhost:8080/orders/<id>
+
+Port-forward admin (health/ready/metrics):
+  kubectl port-forward -n {{ .Release.Namespace }} svc/{{ .Release.Name }}-order-service 9100:9100
+  curl http://localhost:9100/healthz
+  curl http://localhost:9100/readyz
+  curl http://localhost:9100/metrics
+
+Note: the bundled Postgres/Redis StatefulSets (postgres.enabled/redis.enabled)
+are for local/dev clusters only. Point at managed instances in production —
+see values-prod.yaml.

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: order-service
+description: Helm chart for order-service — HTTP+gRPC order API over Postgres and Redis.
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
