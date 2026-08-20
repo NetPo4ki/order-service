@@ -71,24 +71,24 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  deploy:
-    needs: [build]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - uses: actions/checkout@v4
-      - uses: azure/setup-helm@v4
-      - name: Configure kubeconfig
-        run: |
-          mkdir -p "$HOME/.kube"
-          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 -d > "$HOME/.kube/config"
-      - name: helm upgrade --install
-        run: |
-          IMAGE_NAME_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
-          helm upgrade --install order-service ./charts/order-service \
-            -f ./charts/order-service/values-prod.yaml \
-            --set image.repository=${{ env.REGISTRY }}/$IMAGE_NAME_LOWER \
-            --set image.tag=${{ github.sha }} \
-            --namespace order-service --create-namespace \
-            --wait --timeout 5m
+#  deploy:
+#    needs: [build]
+#    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+#    runs-on: ubuntu-latest
+#    environment: production
+#    steps:
+#      - uses: actions/checkout@v4
+#      - uses: azure/setup-helm@v4
+#      - name: Configure kubeconfig
+#        run: |
+#          mkdir -p "$HOME/.kube"
+#          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 -d > "$HOME/.kube/config"
+#      - name: helm upgrade --install
+#        run: |
+#          IMAGE_NAME_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
+#          helm upgrade --install order-service ./charts/order-service \
+#            -f ./charts/order-service/values-prod.yaml \
+#            --set image.repository=${{ env.REGISTRY }}/$IMAGE_NAME_LOWER \
+#            --set image.tag=${{ github.sha }} \
+#            --namespace order-service --create-namespace \
+#            --wait --timeout 5m
