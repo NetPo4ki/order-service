@@ -1,5 +1,3 @@
-version: "2"
-
 run:
   timeout: 5m
 
@@ -8,16 +6,13 @@ linters:
     - bodyclose
     - gosec
     - misspell
-  exclusions:
-    paths:
-      - internal/delivery/grpc/orderv1
-    rules:
-      - path: internal/delivery/grpc/server.go
-        linters:
-          - gosec
-        text: "G115"
 
-formatters:
-  enable:
-    - gofmt
-    - goimports
+issues:
+  exclude-dirs:
+    - internal/delivery/grpc/orderv1
+
+  exclude-rules:
+    - path: internal/delivery/grpc/server.go
+      linters:
+        - gosec
+      text: "G115"
